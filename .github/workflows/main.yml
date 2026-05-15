@@ -34,7 +34,7 @@ jobs:
       - name: Package app into .ipa
         run: |
           mkdir Payload
-          mv build/Build/Products/Release-iphoneos/SceneDepthPointCloud.app Payload/
+          find build/Build/Products/Release-iphoneos -type d -name "*.app" -exec mv {} Payload/ \;
           zip -qr SceneDepthPointCloud.ipa Payload
 
       - name: Upload IPA Artifact
