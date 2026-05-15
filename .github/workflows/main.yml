@@ -20,7 +20,6 @@ jobs:
         run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 
       - name: Build Xcode Project (Unsigned)
-        working-directory: ./ios-depth-point-cloud
         run: |
           xcodebuild clean build \
             -project SceneDepthPointCloud.xcodeproj \
@@ -33,7 +32,6 @@ jobs:
             CODE_SIGNING_ALLOWED=NO
 
       - name: Package app into .ipa
-        working-directory: ./ios-depth-point-cloud
         run: |
           mkdir Payload
           mv build/Build/Products/Release-iphoneos/SceneDepthPointCloud.app Payload/
@@ -43,5 +41,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: SceneDepthPointCloud-LiveContainer-IPA
-          path: ./ios-depth-point-cloud/SceneDepthPointCloud.ipa
+          path: SceneDepthPointCloud.ipa
           retention-days: 7
