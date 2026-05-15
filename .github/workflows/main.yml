@@ -1,0 +1,47 @@
+name: Build IPA for LiveContainer
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    name: Build Unsigned IPA
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Select latest Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+
+      - name: Build Xcode Project (Unsigned)
+        working-directory: ./ios-depth-point-cloud
+        run: |
+          xcodebuild clean build \
+            -project SceneDepthPointCloud.xcodeproj \
+            -scheme SceneDepthPointCloud \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Package app into .ipa
+        working-directory: ./ios-depth-point-cloud
+        run: |
+          mkdir Payload
+          mv build/Build/Products/Release-iphoneos/SceneDepthPointCloud.app Payload/
+          zip -qr SceneDepthPointCloud.ipa Payload
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SceneDepthPointCloud-LiveContainer-IPA
+          path: ./ios-depth-point-cloud/SceneDepthPointCloud.ipa
+          retention-days: 7
